@@ -8,12 +8,12 @@ from django.db import models
 # Create your models here.
 
 class UserManager(BaseUserManager):
-    def create_user(self, name, email, password=None):
+    def create_user(self, name, phone, email, password=None):
         if not email:
             raise ValueError('Email must be provided')
 
         email = self.normalize_email(email)
-        user = self.model(name=name, email=email)
+        user = self.model(name=name, email=email, phone=phone)
         user.set_password(password)
         user.save()
 
@@ -41,4 +41,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     def __str__(self):
-        return f'{self.email}: {self.username}'
+        return f'{self.email}: {self.name}'
