@@ -16,7 +16,15 @@ class LoginView(APIView):
         if not user:
             return Response({"error": "Authentication failed"})
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key})
+        return Response(
+            {
+                "token": token.key, 
+                "user": {
+                    "role": token.user.role,
+                    "name": token.user.name,
+                }
+            }  
+        )
     
     def get(self, request):
         return Response({"hola": "login"})
@@ -58,7 +66,11 @@ class AppointmentView(APIView):
     
     def get(self, request):
         result = []
-        appointments = Appointment.objects.filter(patient_id=request.auth.user.id)
+        if request.auth.user.role == "DOCTOR":
+            appointments = Appointment.objects.filter(doctor_id=request.auth.user.id)
+        else:
+            appointments = Appointment.objects.filter(patient_id=request.auth.user.id)
+
         if not appointments:
             return Response({"result": "No hay citas agendadas para esta fecha."})
         for i in appointments:
