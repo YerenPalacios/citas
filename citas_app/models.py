@@ -34,6 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=15, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff= models.BooleanField(default=False)
+    role = models.CharField(max_length=15, blank=True, null=True, default="PATIENT")
 
     objects = UserManager()
 
@@ -41,4 +42,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     def __str__(self):
-        return f'{self.email}: {self.name}'
+        return f'{self.pk} {self.email}: {self.name}'
+
+
+class Appointment(models.Model):
+    name = models.CharField(max_length=20)
+    date = models.DateTimeField(blank=False)
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient_apointments")
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor_apointments")
+
+    def __str__(self):
+        return f'{self.pk} {self.date}'
