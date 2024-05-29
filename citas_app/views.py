@@ -55,10 +55,10 @@ class AppointmentView(APIView):
         doctor = User.objects.filter(role="DOCTOR").order_by('?').first()
 
         if not doctor:
-            return Response({"result": "No hay doctores"}, status=400)
+            return Response({"error": "No hay doctores"}, status=400)
         
         if date_appointments.exists():
-            return Response({"result": "La cita para la fecha y hora seleccionadas ya está ocupada."}, status=400)
+            return Response({"error": "La cita para la fecha y hora seleccionadas ya está ocupada."}, status=400)
         
         Appointment.objects.create(name=name, date=date, patient_id=request.auth.user.id, doctor=doctor)
 
@@ -72,7 +72,7 @@ class AppointmentView(APIView):
             appointments = Appointment.objects.filter(patient_id=request.auth.user.id)
 
         if not appointments:
-            return Response({"result": "No hay citas agendadas para esta fecha."})
+            return Response({"error": "No hay citas agendadas para esta fecha."})
         for i in appointments:
             result.append({"id":i.pk, "name": i.name, "date": i.date.strftime("%Y-%m-%d %I:%M %p"), "doctor": i.doctor.name})
         return Response({"result": result})
